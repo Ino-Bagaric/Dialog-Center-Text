@@ -124,7 +124,6 @@ static const stock letters[ ] [ ] =
 
 
 #define MAX_LINES 	(100)
-#define MAX_CENTER 	(6)
 
 static centerBuffer[4096];
 static bool:use = false;
