@@ -3,9 +3,9 @@
 
 		Dialog Center Text
 		@author: Ino
-		@version: 1.0.0
+		@version: 1.0.1
 		@release: 27/12/2016
-		@build: 1	
+		@build: 2	
 		@download: github.com/Ino42O/Dialog-Center-Text
 
 	---------------------------------------
@@ -14,6 +14,10 @@
 
 	 		27-12-2016:
 	 			* Initial release
+
+	 		28-12-2016:
+	 			* Fixed space char
+	 			* Added new characters
 
 
 
@@ -118,8 +122,11 @@ static const stock letters[ ] [ ] =
 	{ '.' ,  4}, 
 	{ ',' ,  4},
 	{ '|' ,  4},
-	{ '_' ,  6},
-	{ ' ' ,  4}
+	{ '_' , 10},
+	{ '#' ,  9},
+	{ '^' , 10},
+	{ '~' , 10},
+	{ ' ' ,  3}
 };
 
 
@@ -300,7 +307,7 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 			for (new i = start; i < loop + start; i++)
 			{
 				strins(centerBuffer, " ", i);
-				space += 4;
+				space += 3;
 
 				for (new j = 0; j < lines; j++)
 					lineInfo[j]++;
@@ -322,7 +329,7 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 		for (new i = start; i < loop + start; i++)
 		{
 			strins(centerBuffer, " ", i);
-			space += 4;
+			space += 3;
 
 			for (new j = 0; j < lines; j++)
 				lineInfo[j]++;
