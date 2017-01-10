@@ -25,7 +25,7 @@ CMD:dialog1(playerid, params[])
 		/command\n\
 	");
 
-	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "Title", str, "OK", "Cancel");
+	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "\\cTitle", str, "OK", "Cancel");
 	return 1;
 }
 
@@ -40,7 +40,7 @@ CMD:dialog2(playerid, params[])
 		\\c{FFFFFF}Please, insert your password in box below\
 	", Name);
 
-	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_PASSWORD, "Login", str, "OK", "Cancel");
+	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_PASSWORD, "\\cLogin", str, "OK", "Cancel");
 	return 1;
 }
 
@@ -55,7 +55,7 @@ CMD:dialog3(playerid, params[])
 		\\cIt has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.\
 	");
 
-	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "Test", str, "OK", "Cancel");
+	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "\\cTest", str, "OK", "Cancel");
 	return 1;
 }
 
@@ -72,6 +72,12 @@ CMD:dialog4(playerid, params[])
 		\\cbut also the leap into electronic typesetting, remaining essentially unchanged.\
 	");
 
-	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "Test", str, "OK", "Cancel");
+	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "\\c{00FF00}Colored", str, "OK", "Cancel");
+	return 1;
+}
+
+CMD:dialog5(playerid, params[])
+{
+	ShowPlayerDialog(playerid, 1, DIALOG_STYLE_MSGBOX, "\\c123", "Small un-centered text", "OK", "Cancel");
 	return 1;
 }

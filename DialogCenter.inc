@@ -3,9 +3,9 @@
 
 		Dialog Center Text
 		@author: Ino
-		@version: 1.0.1
+		@version: 1.0.2
 		@release: 27/12/2016
-		@build: 2	
+		@build: 3	
 		@download: github.com/Ino42O/Dialog-Center-Text
 
 	---------------------------------------
@@ -18,6 +18,9 @@
 	 		28-12-2016:
 	 			* Fixed space char
 	 			* Added new characters
+
+	 		10-01-2017:
+	 			* Added support for caption (title) [beta]
 
 
 
@@ -129,11 +132,13 @@ static const stock letters[ ] [ ] =
 	{ ' ' ,  3}
 };
 
-
 #define MAX_LINES 	(100)
 
-static centerBuffer[4096];
-static bool:use = false;
+static 
+	centerBuffer[0xF06],
+	centerTitle [0xFA],
+	bool:use = false
+;
 
 stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
 {
@@ -141,10 +146,10 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 
 	switch (style)
 	{
-		case DIALOG_STYLE_MSGBOX: 			{ defaultSize = 200; }
-		case DIALOG_STYLE_INPUT: 			{ defaultSize = 200; }
+		case DIALOG_STYLE_MSGBOX: 			{ defaultSize = 0xC8; }
+		case DIALOG_STYLE_INPUT: 			{ defaultSize = 0xC8; }
 		case DIALOG_STYLE_LIST: 			{ return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2); } // Still in progress
-		case DIALOG_STYLE_PASSWORD: 		{ defaultSize = 200; }
+		case DIALOG_STYLE_PASSWORD: 		{ defaultSize = 0xC8; }
 		case DIALOG_STYLE_TABLIST: 			{ return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2); } // Still in progress
 		case DIALOG_STYLE_TABLIST_HEADERS: 	{ return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2); } // Still in progress
 		default: 							{ return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2); }
@@ -156,18 +161,22 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 	use = true;
 
 	centerBuffer[0] = '\0';
+	centerTitle [0] = '\0';
 
 	new 
 			 lineInfo 	 [MAX_LINES],
 			 lineSize 	 [MAX_LINES],
 			 lineSpace	 [MAX_LINES],
 		bool:lineCenter  [MAX_LINES],
+		bool:titleCenter,
+			 centered,
 			 biggest,
 			 biggestID,
 			 line = 0,
 
 			 // Find centers
 			 cpos = -2,
+			 tpos = -2,
 
 			 // Count lines
 			 pos = -2,
@@ -200,6 +209,13 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 
 
 	new tmp[3];
+
+	// Center title
+	strmid(tmp, caption, 0, 3);
+	if (strfind(tmp, "\\c", false) != -1)
+		titleCenter = true;
+
+
 	if (lines > 0)
 	{
 		for (new i = 0; i < lines; i++)
@@ -210,14 +226,20 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 				strmid(tmp, info, 0, 3);
 
 				if (strfind(tmp, "\\c", false) != -1)
+				{
 					lineCenter[i] = true;
+					centered++;
+				}
 			}
 			else 
 			{
 				strmid(tmp, info, (lineInfo[i - 1] + 1), (lineInfo[i - 1] + 4));
 
 				if (strfind(tmp, "\\c", false) != -1)
+				{
 					lineCenter[i] = true;
+					centered++;
+				}
 			}
 		}
 	}
@@ -226,11 +248,15 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 		strmid(tmp, info, 0, 3);
 
 		if (strfind(tmp, "\\c", false) != -1)
+		{
 			lineCenter[0] = true;
+			centered++;
+		}
 	}
 
 
 	format (centerBuffer, sizeof(centerBuffer), "%s", info);
+	format (centerTitle,  sizeof(centerTitle),  "%s", caption);
 
 
 	// Find biggest line
@@ -270,6 +296,51 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 		}
 	}
 
+
+	// Title
+	if (!titleCenter) goto skip_title;
+
+	new titleSpace;
+
+	for (new i = 0; i < strlen(caption); i++)
+	{
+		if (centerTitle[i] == '{')
+		{
+			i += 7;
+			continue;
+		}
+
+		for (new j = 0; j < sizeof(letters); j++)
+		{
+			if (centerTitle[i] == letters[j][0])
+			{
+				if (centerTitle[i] == ' ') titleSpace += letters[j][1] + 3;
+				else titleSpace += letters[j][1] - 2;
+				break;
+			}
+		}
+	}
+
+	if (titleSpace < defaultSize)
+	{
+		new loop;
+		if (biggest < defaultSize)            loop = ( ( ( (defaultSize - titleSpace) / 4) / 2) + 4) - ( (centered == 0) ? (1) : (0));
+		else 
+		{
+			if 	    (0xC8  < biggest < 0x15E) loop = ( ( ( (biggest - titleSpace) / 4) - 2) / 2) + 3 + ( (centered == 0) ? (1) : (0));
+			else if (0x15E < biggest < 0x17C) loop = ( ( ( (biggest - titleSpace) / 4) - 2) / 2) + 4 + ( (centered == 0) ? (2) : (0));
+			else if (0x17C < biggest < 0x258) loop = ( ( ( (biggest - titleSpace) / 4) - 4) / 2) + 3 + ( (centered == 0) ? (1) : (0));
+			else if (0x258 < biggest < 0x384) loop = ( ( ( (biggest - titleSpace) / 4) - 5) / 2) + 3 + ( (centered == 0) ? (2) : (0));
+			else 	                          loop = ( ( ( (biggest - titleSpace) / 4) - 7) / 2) + 1 + ( (centered == 0) ? (1) : (0));
+		}
+
+		for (new i = 0; i < loop; i++)
+		{
+			strins(centerTitle, " ", i);
+		}
+	}
+
+	skip_title:
 
 	generate_line:
 
@@ -348,8 +419,11 @@ stock dcenter_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], but
 	while (-1 != ( cpos = strfind(centerBuffer, "\\c", false, cpos + 2) ) )
 		strdel(centerBuffer, cpos, cpos + 2);
 
+	while (-1 != ( tpos = strfind(centerTitle, "\\c", false, tpos + 2) ) )
+		strdel(centerTitle, tpos, tpos + 2);
+
 	use = false;
-	return ShowPlayerDialog(playerid, dialogid, style, caption, centerBuffer, button1, button2);
+	return ShowPlayerDialog(playerid, dialogid, style, centerTitle, centerBuffer, button1, button2);
 }
 
 #if defined _ALS_ShowPlayerDialog
