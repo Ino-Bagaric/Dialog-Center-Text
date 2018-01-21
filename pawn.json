@@ -1,0 +1,9 @@
+{
+	"user": "SAMP-git",
+	"repo": "Dialog-Center-Text",
+	"entry": "DialogCenterExample.pwn",
+	"output": "DialogCenterExample.amx",
+	"dependencies": [
+		"sampctl/samp-stdlib"
+	]
+}
